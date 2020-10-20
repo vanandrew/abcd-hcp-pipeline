@@ -76,22 +76,24 @@ RUN apt-get clean \
        fi \
     && chmod -R 777 /neurodocker && chmod a+s /neurodocker
 
-# install wb_command v1.3.2
+# install wb_command v1.4.2
 RUN mkdir -p /opt
 WORKDIR /opt
-RUN curl --retry 5 https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.3.2.zip --output workbench-linux64-v1.3.2.zip && \
-  unzip workbench-linux64-v1.3.2.zip && \
-  rm workbench-linux64-v1.3.2.zip
+RUN curl --retry 5 https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.4.2.zip --output workbench-linux64-v1.4.2.zip && \
+  unzip workbench-linux64-v1.4.2.zip && \
+  rm workbench-linux64-v1.4.2.zip
 
 #-------------------
-# Install ANTs 2.2.0
+# Install ANTs (Latest build from source)
 #-------------------
-RUN echo "Downloading ANTs ..." \
-    && curl -sSL --retry 5 https://dl.dropbox.com/s/2f4sui1z6lcgyek/ANTs-Linux-centos5_x86_64-v2.2.0-0740f91.tar.gz \
-    | tar zx -C /opt
-
-ENV ANTSPATH=/opt/ants \
-    PATH=/opt/ants:$PATH
+# RUN echo "Downloading ANTs ..." \
+#     && curl -sSL --retry 5 https://dl.dropbox.com/s/2f4sui1z6lcgyek/ANTs-Linux-centos5_x86_64-v2.2.0-0740f91.tar.gz \
+#     | tar zx -C /opt
+RUN apt-get update && apt-get install -y build-essential git cmake curl zlib1g-dev && mkdir ants_temp && cd ants_temp && \
+curl -O https://raw.githubusercontent.com/cookpa/antsInstallExample/master/installANTs.sh && \
+chmod +x installANTs.sh && ./installANTs.sh && mv install ../ants && cd .. && rm -rf ants_temp
+ENV ANTSPATH=/opt/ants/bin \
+    PATH=/opt/ants/bin:$PATH
 
 #------------------------
 # Install Convert3D 1.0.0
